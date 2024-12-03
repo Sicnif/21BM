@@ -10,24 +10,21 @@
 
 using namespace std;
 
-
+//Funcion para limpiar residuos que queden dentro de las varibles o linea de comando
 void cleanInput(string printMessage = "") {
-    cin.clear();           
-    cin.ignore(1000, '\n');   
+    cin.clear();//limpia la entrada       
+    cin.ignore(1000, '\n');//ignora hasta mil errores  
     if (!printMessage.empty()) { 
         cout << printMessage;
     }
 }
-
+//Funcion para convertir una cadena de texto a mayusculas.
 void convertirMayusculas(string& texto) {
     for (int i = 0; i < texto.size(); i++) {
         texto[i] = toupper(texto[i]);
     }
 }
-
-bool esSoloLetrasYEspacios(const string& texto); // Declaración
-
-
+//Funcion para validar que la cadena de texto solo tenga letras y espacios.
 bool esSoloLetrasYEspacios(const string& texto) {
     for (size_t i = 0; i < texto.length(); i++) {
     char c = texto[i];
@@ -38,41 +35,52 @@ bool esSoloLetrasYEspacios(const string& texto) {
 
     return true;
 }
-
+//Funcion para mandar a pedir un dato al usuario
 void obtenerDato(string& dato, const string& mensaje, bool obligatorio = true) {
     do {
         cout << mensaje;
         getline(cin, dato);
-
+		//Si el dato enviado esta vacio este lo vuelve a pedir ya que es obligatorio.
         if (dato.empty() && obligatorio) {
             cout << "Este campo es obligatorio. Intenta de nuevo.\n";
             continue;
         }
-
+		//Llamamos a la funcion y si este regresa diferente de TRUE vuelve a pedir el dato
         if (!esSoloLetrasYEspacios(dato)) {
             cout << "Por favor, ingresa solo letras y espacios. Intenta de nuevo.\n";
             dato.clear();
         }
     } while (dato.empty() || !esSoloLetrasYEspacios(dato));
-
+    
+	//Al validar la entrada transforma la cadena a mayusculas
     convertirMayusculas(dato);
 }
-
+//Funcion para pedir los apellidos
 void capturarApellidos(string& apellidoPaterno, string& apellidoMaterno) {
     string apellidos;
     do {
+    	//Mandamos a pedir los apellidos
         cout << "\nIngresa tu(s) apellido(s)\n(Paterno y Materno separados por un espacio o presiona Enter si no tienes el otro): \n";
         getline(cin, apellidos);
 
+        // Validar si el usuario no ingresÃ³ nada
+        if (apellidos.empty()) {
+            apellidoPaterno = "X";
+            apellidoMaterno = "X";
+            return;
+        }
+
+        // Validar entrada vÃ¡lida
         if (!esSoloLetrasYEspacios(apellidos)) {
             cout << "Por favor, ingresa solo letras y espacios.\n";
             apellidos.clear();
         }
-    } while (apellidos.empty() || !esSoloLetrasYEspacios(apellidos));
-
+    } while (!esSoloLetrasYEspacios(apellidos));
+	
     convertirMayusculas(apellidos);
-
+	//declara true o false la variable si encuentra espacios vacios dentro del string apellidos.
     size_t espacio = apellidos.find(' ');
+    //si dentro del string espacio no encontro lo que es un espacio ejecuta el if
     if (espacio != string::npos) {
         apellidoPaterno = apellidos.substr(0, espacio);
         apellidoMaterno = apellidos.substr(espacio + 1);
@@ -81,9 +89,7 @@ void capturarApellidos(string& apellidoPaterno, string& apellidoMaterno) {
         apellidoMaterno = "X";
     }
 }
-
-
-
+//Funcion para pedir el sexo
 bool ingSexo(char& sexo) {
     cout << "Sexo (H/M): ";
     while (true) {
@@ -98,10 +104,7 @@ bool ingSexo(char& sexo) {
         }
     }
 }
-
-
-
-
+//Funcion para identificar si dentro del string hay un valor que no sea un numero
 bool isDigits(const string& str) {
     for (size_t i = 0; i < str.size(); i++) {
         if (!isdigit(str[i])) {
@@ -110,32 +113,33 @@ bool isDigits(const string& str) {
     }
     return true;
 }
-
-
+//funcion para string a int
 int stringToInt(const string& str) {
     return atoi(str.c_str());
 }
 
-
+//Funcion para pedir el cumpleaÃ±os 
 bool ingBirthday(string& Fecha) {
     string birthday;
     cout << "\nIngresa la fecha en formato dd/mm/aaaa: ";
     cin >> birthday;
 
-    
+	//Buscamos dentro del string diagonales que son para reparar la fecha
     size_t primerSlash = birthday.find('/');
-    size_t segundoSlash = birthday.find('/', primerSlash + 1);
+    size_t segundoSlash = birthday.find('/', primerSlash + 1);//buscamos la segunda diagonal
 
+	//Si las varaibles no encontraron las dos diagonales vuelve a pedir la fecha 
     if (primerSlash == string::npos || segundoSlash == string::npos) {
         cleanInput("Formato incorrecto. Intenta de nuevo.\n");
         return false;
     }
-
+	
+	//Sacamos del string los valores para ingresarlos a una variable, desde un punto dado hasta el otro punto dado
     string day = birthday.substr(0, primerSlash);
     string month = birthday.substr(primerSlash + 1, segundoSlash - primerSlash - 1);
     string year = birthday.substr(segundoSlash + 1);
 
- 
+ 	//Si cualquiera de las fechas no es una fecha de numeros este la volvera a pedir
     if (!isDigits(day) || !isDigits(month) || !isDigits(year)) {
         cleanInput("Formato incorrecto. Usa solo numeros.\n");
         return false;
@@ -144,12 +148,17 @@ bool ingBirthday(string& Fecha) {
     int d = stringToInt(day);
     int m = stringToInt(month);
     int y = stringToInt(year);
+	
+	//valida que la fecha ingresada exista
+    if (d < 1 || m < 1 || m > 12 || y < 1000 || y > 9999 || 
+    (m == 2 && (d > 29 || (d == 29 && !(y % 4 == 0 && (y % 100 != 0 || y % 400 == 0))))) || //mes de febrero
+    (m == 4 || m == 6 || m == 9 || m == 11) && d > 30 || //meses de 30 dias
+    (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) && d > 31) { //meses de 31 dias
+    cleanInput("Fecha invalida. Intenta de nuevo.\n");
+    return false;
+	}
 
-    if (d < 1 || d > 31 || m < 1 || m > 12 || y < 1000 || y > 9999) {
-        cleanInput("Fecha invalida. Intenta de nuevo.\n");
-        return false;
-    }
-
+	
     stringstream ss;
     ss << setw(2) << setfill('0') << d 
        << setw(2) << setfill('0') << m 
@@ -172,19 +181,19 @@ string removeAccents(const string& str) {
     for (size_t i = 0; i < str.length(); i++) {
         char c = str[i];
   
-       if (c == 'á' || c == 'à' || c == 'ä' || c == 'â') c = 'a';
-        else if (c == 'é' || c == 'è' || c == 'ë' || c == 'ê') c = 'e';
-        else if (c == 'í' || c == 'ì' || c == 'ï' || c == 'î') c = 'i';
-        else if (c == 'ó' || c == 'ò' || c == 'ö' || c == 'ô') c = 'o';
-        else if (c == 'ú' || c == 'ù' || c == 'ü' || c == 'û') c = 'u';
-        else if (c == 'ñ') c = 'n';
+       if (c == 'Ã¡' || c == 'Ã ' || c == 'Ã¤' || c == 'Ã¢') c = 'a';
+        else if (c == 'Ã©' || c == 'Ã¨' || c == 'Ã«' || c == 'Ãª') c = 'e';
+        else if (c == 'Ã­' || c == 'Ã¬' || c == 'Ã¯' || c == 'Ã®') c = 'i';
+        else if (c == 'Ã³' || c == 'Ã²' || c == 'Ã¶' || c == 'Ã´') c = 'o';
+        else if (c == 'Ãº' || c == 'Ã¹' || c == 'Ã¼' || c == 'Ã»') c = 'u';
+        else if (c == 'Ã±') c = 'n';
         result += c;
     }
     return result;
 }
 
 void mostrarEstadosValidos() {
-    cout << "\n**************************************************\n";
+    cout << "\n********\n";
     cout << "              ESTADOS VALIDOS DE MEXICO\n";
     cout << "1. Aguascalientes (AS)\n";
     cout << "2. Baja California (BC)\n";
@@ -220,7 +229,7 @@ void mostrarEstadosValidos() {
     cout << "32. Ciudad de Mexico (DF)\n";
     cout << "33. Extranjero (NE)\n";
 
-    cout << "**************************************************\n";
+    cout << "******\n";
 }
 
 bool obtenerEstado(string& estado) {
@@ -349,11 +358,11 @@ string generarCURP(const string& nombre, const string& apellidoPaterno, const st
 
     cout << "Conseguir CURP: " << endl;
 
-    
+    // Obtener nombre(s)
     while (true) {
         obtenerDato(nombre, "Ingresa tu(s) nombre(s): ");
         if (esSoloLetrasYEspacios(nombre)) {
-            break; 
+            break; // Nombre vÃ¡lido, salir del bucle
         } else {
             cout << "Por favor, ingresa solo letras y espacios. Intenta de nuevo.\n";
         }
@@ -377,41 +386,41 @@ string generarCURP(const string& nombre, const string& apellidoPaterno, const st
                 apellidoPaterno = apellidos;
                 apellidoMaterno = "X"; // Asignar "X" si no hay apellido materno
             }
-            break; 
+            break; // Apellidos vÃ¡lidos, salir del bucle
         } else {
             cout << "Por favor, ingresa solo letras y espacios. Intenta de nuevo.\n";
         }
     }
 
-   
+    // Mostrar los datos capturados para confirmar
     cout << "\nDatos capturados para CURP:\n";
     cout << "Nombre(s): " << nombre << "\n";
     cout << "Apellido Paterno: " << apellidoPaterno << "\n";
     cout << "Apellido Materno: " << apellidoMaterno << "\n";
 
-  
+    // Capturar la fecha de nacimiento
     while (!ingBirthday(birthday)) {
-        
+        // Validar hasta obtener una fecha vÃ¡lida
     }
     cout << "Fecha almacenada: " << birthday << endl;
 
-    
+    // Capturar sexo
     ingSexo(sexo);
 
-    
+    // Mostrar lista de estados vÃ¡lidos
     mostrarEstadosValidos();
 
- 
+    // Capturar estado de origen
     while (!obtenerEstado(estado)) {
-       
+        // Repetir hasta que sea vÃ¡lido
     }
-    cout << "Estado válido ingresado: " << estado << endl;
+    cout << "Estado vÃ¡lido ingresado: " << estado << endl;
 
-  
+    // Generar la CURP
     string curp = generarCURP(nombre, apellidoPaterno, apellidoMaterno, birthday, sexo, estado);
 
+    // Mostrar CURP generada
     cout << "\nCURP generada: " << curp << endl;
 
     return 0;
 }
-
