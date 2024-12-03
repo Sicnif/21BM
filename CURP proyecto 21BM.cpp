@@ -60,17 +60,17 @@ void capturarApellidos(string& apellidoPaterno, string& apellidoMaterno) {
     string apellidos;
     do {
     	//Mandamos a pedir los apellidos
-        cout << "\nIngresa tu(s) apellido(s)\n(Paterno y Materno separados por un espacio o presiona Enter si no tienes el otro): \n";
+    cout << "\nIngresa tu(s) apellido(s)\n(Paterno y Materno separados por un espacio o presiona Enter si no tienes el otro): \nApellido(s): ";
         getline(cin, apellidos);
 
-        // Validar si el usuario no ingresó nada
+        // Validar si el usuario no ingresa nada
         if (apellidos.empty()) {
             apellidoPaterno = "X";
             apellidoMaterno = "X";
             return;
         }
 
-        // Validar entrada válida
+        // Validar entrada valida
         if (!esSoloLetrasYEspacios(apellidos)) {
             cout << "Por favor, ingresa solo letras y espacios.\n";
             apellidos.clear();
@@ -118,7 +118,7 @@ int stringToInt(const string& str) {
     return atoi(str.c_str());
 }
 
-//Funcion para pedir el cumpleaños 
+//Funcion para pedir el cumplea;os 
 bool ingBirthday(string& Fecha) {
     string birthday;
     cout << "\nIngresa la fecha en formato dd/mm/aaaa: ";
@@ -158,16 +158,17 @@ bool ingBirthday(string& Fecha) {
     return false;
 	}
 
-	
+	//declaramos un onjeto
     stringstream ss;
+    //indicamos que la longitud de cada variable debe ser de dos digitos si se ingresa un numero menor a 10 que ocupa dos posiciones se llena con un 0 para cumplir la condicion de 2 espacios.
     ss << setw(2) << setfill('0') << d 
        << setw(2) << setfill('0') << m 
        << y; 
-
+	//guardamos el valor del objeto dentro de una variable
     Fecha = ss.str();
     return true;
 }
-
+//Funcion para hacer mayuscula eb caso de no funcionar el toupper
 void toUpperCase(string& str) {
     for (int i = 0; i < str.length(); ++i) {
         if (str[i] >= 'a' && str[i] <= 'z') {
@@ -175,13 +176,13 @@ void toUpperCase(string& str) {
         }
     }
 }
-
+//Funcion para remover los acentos del string
 string removeAccents(const string& str) {
     string result;
     for (size_t i = 0; i < str.length(); i++) {
         char c = str[i];
   
-       if (c == 'á' || c == 'à' || c == 'ä' || c == 'â') c = 'a';
+      if (c == 'á' || c == 'à' || c == 'ä' || c == 'â') c = 'a';
         else if (c == 'é' || c == 'è' || c == 'ë' || c == 'ê') c = 'e';
         else if (c == 'í' || c == 'ì' || c == 'ï' || c == 'î') c = 'i';
         else if (c == 'ó' || c == 'ò' || c == 'ö' || c == 'ô') c = 'o';
@@ -191,9 +192,9 @@ string removeAccents(const string& str) {
     }
     return result;
 }
-
+//Funcion solo para mostrar los estados, (como si fuera una base de datos)
 void mostrarEstadosValidos() {
-    cout << "\n********\n";
+    cout << "\n******************\n";
     cout << "              ESTADOS VALIDOS DE MEXICO\n";
     cout << "1. Aguascalientes (AS)\n";
     cout << "2. Baja California (BC)\n";
@@ -229,9 +230,9 @@ void mostrarEstadosValidos() {
     cout << "32. Ciudad de Mexico (DF)\n";
     cout << "33. Extranjero (NE)\n";
 
-    cout << "******\n";
+    cout << "******************\n";
 }
-
+//Funcion para validar el estado solicitado almacenando tambien la nomenclatura(como si fuera una DB)
 bool obtenerEstado(string& estado) {
 
     string estados[][3] = {
@@ -251,11 +252,11 @@ bool obtenerEstado(string& estado) {
     string input;
     cout << "Ingresa tu estado de origen (por nombre completo, abreviatura o numero): ";
     getline(cin, input);
-  
+  	
     input = removeAccents(input);
     toUpperCase(input);
 
-
+	//Hacemos un ciclo para remover los acentos y hacemos mayuscula del estado solicitado para buscarlo con exactitud
     for (int i = 0; i < 33; ++i) {
 
         string estadoValidado = removeAccents(estados[i][0]);
@@ -272,7 +273,7 @@ bool obtenerEstado(string& estado) {
     return false;
 }
 
-
+//Funcion para obtener la primera vocal de un string
 char obtenerPrimeraVocalInterna(const string& palabra) {
     for (size_t i = 1; i < palabra.length(); i++) { 
         char c = tolower(palabra[i]);
@@ -282,7 +283,7 @@ char obtenerPrimeraVocalInterna(const string& palabra) {
     }
     return 'X'; 
 }
-
+//Funcion para obtener la primera consonante de un string
 char obtenerPrimeraConsonanteInterna(const string& palabra) {
     for (size_t i = 1; i < palabra.length(); i++) { 
         char c = tolower(palabra[i]);
@@ -293,40 +294,48 @@ char obtenerPrimeraConsonanteInterna(const string& palabra) {
     return 'X'; 
 }
 
-
+//Funcion para crear la curp
 string generarCURP(const string& nombre, const string& apellidoPaterno, const string& apellidoMaterno,
                    const string& birthday, char sexo, const string& estado) {
     string curp;
 
-   
+   //Concatenamos la informacion recibida dentro de la variable
     curp += toupper(apellidoPaterno[0]);
 
 
     curp += obtenerPrimeraVocalInterna(apellidoPaterno);
-
-
+	
+	/*
+	if (!apellidoPaterno.empty()) {
+        curp += toupper(apellidoPaterno[0]);
+    } else {
+        curp += 'X'; 
+    }
+    */
     if (!apellidoMaterno.empty()) {
         curp += toupper(apellidoMaterno[0]);
     } else {
         curp += 'X'; 
     }
-
+	
     size_t espacio = nombre.find(' ');
     
     string primerNombre;
-
+	
+	//Si esata almacenado un espacio dentro del nombre buscara todo el texto hasta el espacio, osea el segundo nombre
 	if (espacio != string::npos) {
 	    primerNombre = nombre.substr(0, espacio);
 	} else {
 	    primerNombre = nombre;
 	}
 
-    
+    //Excepciones de nombres
     if ((primerNombre == "JOSE" || primerNombre == "MARIA" || primerNombre == "MA" || primerNombre == "J") && espacio != string::npos) {
         primerNombre = nombre.substr(espacio + 1);
     }
     curp += toupper(primerNombre[0]);
-
+	
+	//Extraemos las posiciones dentro del string de fecha de nacimiento
     curp += birthday.substr(6, 2); 
     curp += birthday.substr(2, 2); 
     curp += birthday.substr(0, 2); 
@@ -340,6 +349,7 @@ string generarCURP(const string& nombre, const string& apellidoPaterno, const st
     
     curp += obtenerPrimeraConsonanteInterna(apellidoPaterno);
 
+	//Buscamos la primera consonante del apellido materno, en caso de estar vacio se sustituye por X
     if (!apellidoMaterno.empty()) {
         curp += obtenerPrimeraConsonanteInterna(apellidoMaterno);
     } else {
@@ -362,7 +372,7 @@ string generarCURP(const string& nombre, const string& apellidoPaterno, const st
     while (true) {
         obtenerDato(nombre, "Ingresa tu(s) nombre(s): ");
         if (esSoloLetrasYEspacios(nombre)) {
-            break; // Nombre válido, salir del bucle
+            break; // Nombre valido, salir del bucle
         } else {
             cout << "Por favor, ingresa solo letras y espacios. Intenta de nuevo.\n";
         }
@@ -370,27 +380,38 @@ string generarCURP(const string& nombre, const string& apellidoPaterno, const st
 
     // Obtener apellidos
     while (true) {
-        string apellidos;
-        cout << "\nIngresa tu(s) apellido(s)\n(Paterno y Materno separados por un espacio o presiona Enter si no tienes el otro): ";
-        getline(cin, apellidos);
-
-        if (esSoloLetrasYEspacios(apellidos)) {
-            convertirMayusculas(apellidos);
-
-            // Dividir los apellidos
-            size_t espacio = apellidos.find(' ');
-            if (espacio != string::npos) {
-                apellidoPaterno = apellidos.substr(0, espacio);
-                apellidoMaterno = apellidos.substr(espacio + 1);
-            } else {
-                apellidoPaterno = apellidos;
-                apellidoMaterno = "X"; // Asignar "X" si no hay apellido materno
-            }
-            break; // Apellidos válidos, salir del bucle
-        } else {
-            cout << "Por favor, ingresa solo letras y espacios. Intenta de nuevo.\n";
-        }
-    }
+	    string apellidos;
+	    cout << "\nIngresa tu(s) apellido(s)\n(Paterno y Materno separados por un espacio o presiona Enter si no tienes el otro): \nApellido(s): ";
+	    getline(cin, apellidos);
+	
+	    // Verificar si la entrada esta vacia o contiene solo espacios
+	    if (apellidos.empty() || apellidos.find_first_not_of(' ') == string::npos) {
+	        apellidoPaterno = "X";
+	        apellidoMaterno = "X";
+	        break; // Salir del bucle si no se ingresa nada
+	    }
+	
+	    // Validar que la entrada contenga solo letras y espacios
+	    if (!esSoloLetrasYEspacios(apellidos)) {
+	        cout << "Por favor, ingresa solo letras y espacios. Intenta de nuevo.\n";
+	    } else {
+	        // Convertir a mayusculas
+	        convertirMayusculas(apellidos);
+	
+	        // Dividir los apellidos
+	        size_t espacio = apellidos.find(' ');
+	        if (espacio != string::npos) {
+	            // Si encontramos un espacio, separamos los apellidos
+	            apellidoPaterno = apellidos.substr(0, espacio);
+	            apellidoMaterno = apellidos.substr(espacio + 1);
+	        } else {
+	            // Si no hay espacio, asignamos el apellido paterno y "X" para el materno
+	            apellidoPaterno = apellidos;
+	            apellidoMaterno = "X";
+	        }
+	        break; // Apellidos validos, salir del bucle
+	    }
+	}
 
     // Mostrar los datos capturados para confirmar
     cout << "\nDatos capturados para CURP:\n";
@@ -400,21 +421,21 @@ string generarCURP(const string& nombre, const string& apellidoPaterno, const st
 
     // Capturar la fecha de nacimiento
     while (!ingBirthday(birthday)) {
-        // Validar hasta obtener una fecha válida
+        // Validar hasta obtener una fecha valida
     }
     cout << "Fecha almacenada: " << birthday << endl;
 
     // Capturar sexo
     ingSexo(sexo);
 
-    // Mostrar lista de estados válidos
+    // Mostrar lista de estados validos
     mostrarEstadosValidos();
 
     // Capturar estado de origen
     while (!obtenerEstado(estado)) {
-        // Repetir hasta que sea válido
+        // Repetir hasta que sea valido
     }
-    cout << "Estado válido ingresado: " << estado << endl;
+    cout << "Estado v�lido ingresado: " << estado << endl;
 
     // Generar la CURP
     string curp = generarCURP(nombre, apellidoPaterno, apellidoMaterno, birthday, sexo, estado);
