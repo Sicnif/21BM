@@ -435,7 +435,7 @@ string generarCURP(const string& nombre, const string& apellidoPaterno, const st
     while (!obtenerEstado(estado)) {
         // Repetir hasta que sea valido
     }
-    cout << "Estado v�lido ingresado: " << estado << endl;
+    cout << "Estado valido ingresado: " << estado << endl;
 
     // Generar la CURP
     string curp = generarCURP(nombre, apellidoPaterno, apellidoMaterno, birthday, sexo, estado);
